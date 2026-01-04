@@ -1,5 +1,5 @@
-FROM node:18-alpine
 WORKDIR /app
+FROM node:18-alpine
 # Copiem fișierele de configurare
 COPY package*.json ./
 COPY tsconfig.json ./
