@@ -1,15 +1,28 @@
-WORKDIR /app
+# 1. Specificăm imaginea de bază
 FROM node:18-alpine
-# Copiem fișierele de configurare
+
+# 2. Setează directorul de lucru (trebuie să fie DUPĂ FROM)
+WORKDIR /app
+
+# 3. Instalăm utilitarele de build necesare pentru Alpine (pentru erori de tip exit code 2)
+# Alpine folosește 'apk' în loc de 'apt-get'
+RUN apk add --no-cache python3 make g++ 
+
+# 4. Copiem fișierele de configurare
 COPY package*.json ./
 COPY tsconfig.json ./
-# Instalăm toate dependențele (inclusiv cele de build)
-RUN npm ci
-# Copiem restul codului sursă
+
+# 5. Instalăm dependențele
+RUN npm install
+
+# 6. Copiem restul codului sursă
 COPY . .
-# IMPORTANT: Generăm folderul /dist (compilăm codul)
+
+# 7. Generăm folderul /dist (compilăm TypeScript)
 RUN npm run build
-# Expunem portul (Northflank are nevoie de el)
+
+# 8. Expunem portul
 EXPOSE 3000
-# Pornim aplicația folosind scriptul configurat de tine
+
+# 9. Comanda de start
 CMD ["npm", "start"]
