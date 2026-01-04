@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 # Instalăm toate dependențele (inclusiv cele de build)
-RUN npm install
+RUN npm ci
 # Copiem restul codului sursă
 COPY . .
 # IMPORTANT: Generăm folderul /dist (compilăm codul)
