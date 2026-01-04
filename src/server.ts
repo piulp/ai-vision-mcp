@@ -592,3 +592,25 @@ async function main() {
 }
 
 main();
+// --- ADAUGĂ ACEST COD LA FINALUL FIȘIERULUI ---
+import http from 'http';
+
+const healthPort = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('MCP Server is running via STDIO. HTTP port is only for health checks.\n');
+}).listen(healthPort, '0.0.0.0', () => {
+  console.log(`Health check server listening on port ${healthPort}`);
+});
+
+// Pornirea oficială a transportului MCP
+async function runServer() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('AI Vision MCP server running on stdio');
+}
+
+runServer().catch((error) => {
+  console.error('Fatal error running server:', error);
+  process.exit(1);
+});
