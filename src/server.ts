@@ -614,3 +614,27 @@ runServer().catch((error) => {
   console.error('Fatal error running server:', error);
   process.exit(1);
 });
+import http from 'http';
+
+// 1. Server HTTP pentru Health Check (obligatoriu pentru Northflank)
+const healthPort = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  // Răspunde cu OK la orice cerere pe portul 3000
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('MCP Server is running');
+}).listen(healthPort, '0.0.0.0', () => {
+  // Folosim console.error pentru log-uri ca să nu poluăm stdout (rezervat pentru MCP)
+  console.error(`Health check server listening on port ${healthPort}`);
+});
+
+// 2. Pornirea propriu-zisă a transportului MCP
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('AI Vision MCP Server running on stdio');
+}
+
+main().catch((error) => {
+  console.error('Fatal error in main():', error);
+  process.exit(1);
+});
