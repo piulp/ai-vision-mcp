@@ -11,13 +11,12 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
-    "prepare": "npm run build",
     "prepublishOnly": "npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "publish-registry": "mcp-publisher publish",
-    "publish-registry:dry-run": "mcp-publisher publish --dry-run"
+    "publish-registry:dry-run": "mcp-publisher publish --dry-run",
   },
   "keywords": [
     "mcp",
