@@ -1,28 +1,38 @@
-# 1. Specificăm imaginea de bază
-FROM node:18-alpine
+# Folosim o versiune mai stabilă (nu Alpine, pentru a evita lipsa librăriilor C++)
+FROM node:18-bullseye-slim
 
-# 2. Setează directorul de lucru (trebuie să fie DUPĂ FROM)
+# 1. Instalăm utilitarele de build pentru sistemele Debian (mult mai stabile decât Alpine pentru 'sharp')
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# 3. Instalăm utilitarele de build necesare pentru Alpine (pentru erori de tip exit code 2)
-# Alpine folosește 'apk' în loc de 'apt-get'
-RUN apk add --no-cache python3 make g++ gcc vips-dev py3-setuptools
+# 2. Setăm variabile de mediu pentru a ignora erorile de permisiuni ale npm
+ENV NPM_CONFIG_LOGLEVEL=warn
+ENV NPM_CONFIG_FUND=false
 
-# 4. Copiem fișierele de configurare
+# 3. Copiem fișierele de configurare
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# 5. Instalăm dependențele
-RUN npm config set unsafe-perm true
-RUN npm install
+# 4. EXTREM DE IMPORTANT: Ștergem orice urmă de configurare locală și instalăm curat
+# Folosim --unsafe-perm pentru a permite rularea scripturilor de build ale pachetelor
+RUN npm install --unsafe-perm
 
-# 6. Copiem restul codului sursă
+# 5. Copiem restul codului
 COPY . .
-RUN npm run build
-# 7. Generăm folderul /dist (compilăm TypeScript)
 
-# 8. Expunem portul
+# 6. Build aplicație
+RUN npm run build
+
+# 7. Permisiuni de execuție pentru MCP
+RUN chmod +x dist/index.js
+
 EXPOSE 3000
 
-# 9. Comanda de start
 CMD ["npm", "start"]
