@@ -3,9 +3,9 @@
   "version": "0.0.5",
   "type": "module",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc --skipLibCheck",
-    "start": "node --max-old-space-size=4096 dist/index.js"
+ "scripts": {
+  "build": "tsc --skipLibCheck --noEmitOnError --transpileOnly --incremental false",
+  "start": "node --max-old-space-size=4096 dist/index.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.17.1",
