@@ -1,37 +1,27 @@
-# Folosim o versiune mai stabilă (nu Alpine, pentru a evita lipsa librăriilor C++)
 FROM node:18-bullseye-slim
 
-# 1. Instalăm utilitarele de build pentru sistemele Debian (mult mai stabile decât Alpine pentru 'sharp')
+# Instalăm dependințele de sistem necesare
 RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    gcc \
-    libc6-dev \
+    python3 make g++ gcc libc6-dev libvips-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 2. Setăm variabile de mediu pentru a ignora erorile de permisiuni ale npm
-ENV NPM_CONFIG_LOGLEVEL=warn
-ENV NPM_CONFIG_FUND=false
-
-# 3. Copiem fișierele de configurare
-COPY package*.json ./
+# Copiem DOAR package.json (NU și package-lock.json)
+COPY package.json ./
 COPY tsconfig.json ./
 
-# 4. EXTREM DE IMPORTANT: Ștergem orice urmă de configurare locală și instalăm curat
-# Folosim --unsafe-perm pentru a permite rularea scripturilor de build ale pachetelor
-RUN npm install --unsafe-perm
+# SETĂRI CRITICE:
+# 1. Forțăm instalarea ignorând lockfile-ul local care cauzează eroarea 2
+# 2. Mărim limita de memorie pentru procesul de instalare
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
-# 5. Copiem restul codului
+RUN npm install --no-package-lock --unsafe-perm
+
+# Acum copiem restul fișierelor
 COPY . .
 
-# 6. Build aplicație
 RUN npm run build
-
-# 7. Permisiuni de execuție pentru MCP
-RUN chmod +x dist/index.js
 
 EXPOSE 3000
 
