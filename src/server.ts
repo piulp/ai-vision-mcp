@@ -596,11 +596,12 @@ main();
 import http from 'http';
 
 const healthPort = process.env.PORT || 3000;
+
 http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('MCP Server is running via STDIO. HTTP port is only for health checks.\n');
-}).listen(healthPort, '0.0.0.0', () => {
-  console.log(`Health check server listening on port ${healthPort}`);
+  res.end('MCP Server is running');
+}).listen(healthPort, '::', () => {  // <--- SCHIMBĂ AICI din '0.0.0.0' în '::'
+  console.error(`Health check server listening on port ${healthPort}`);
 });
 
 // Pornirea oficială a transportului MCP
