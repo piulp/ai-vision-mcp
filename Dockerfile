@@ -1,29 +1,26 @@
-# Folosim imaginea completă, care are deja utilitarele de build necesare
-FROM node:18-bullseye
+FROM node:18-bullseye-slim
+
+# 2. Instalăm doar strictul necesar de sistem
+RUN apt-get update && apt-get install -y python3 make g++ gcc libvips-dev && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Setăm variabile pentru a forța instalarea binarelor pre-compilate pentru Linux
-ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
-ENV npm_config_arch=x64
-ENV npm_config_platform=linux
-
-# Copiem doar package.json
+# 3. Copiem fișierele de bază
 COPY package.json ./
-COPY tsconfig.json ./
+# NU copiem package-lock.json pentru a evita conflictele de platformă (Windows vs Linux)
 
-# Ștergem orice urmă de cache și instalăm curat
-# Folosim --legacy-peer-deps în caz de conflicte între pachetele Google AI și MCP
-RUN npm cache clean --force
-RUN npm install --include=dev --legacy-peer-deps
+# 4. SETĂRI CRITICE pentru a opri eroarea 2:
+# Forțăm npm să instaleze pachetele pentru Linux și să ignore scripturile care eșuează
+RUN npm config set unsafe-perm true
+RUN npm install --platform=linux --arch=x64 --libc=glibc
 
-# Copiem restul fișierelor
+# 5. Copiem restul codului
 COPY . .
 
-# Compilăm TypeScript
+# 6. Compilăm TypeScript (dacă ai tsc instalat ca devDependency)
 RUN npm run build
 
-# Expunem portul 3000 pentru Health Check
 EXPOSE 3000
 
+# Pornim aplicația
 CMD ["npm", "start"]
