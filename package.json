@@ -1,35 +1,12 @@
 {
   "name": "ai-vision-mcp",
   "version": "0.0.5",
-  "description": "Vision MCP server that provides AI-powered image and video analysis using Google Gemini and Vertex AI",
-  "main": "dist/index.js",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --incremental --skipLibCheck",
-    "dev": "tsc --watch",
-    "start": "node --max-old-space-size=4096 dist/index.js",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "prepublishOnly": "npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
-    "publish-registry": "mcp-publisher publish",
-    "publish-registry:dry-run": "mcp-publisher publish"
+    "build": "tsc --skipLibCheck",
+    "start": "node --max-old-space-size=4096 dist/index.js"
   },
-  "keywords": [
-    "mcp",
-    "vision",
-    "ai",
-    "image-analysis",
-    "video-analysis",
-    "gemini",
-    "vertex-ai",
-    "google-ai"
-  ],
-  "author": "Tan Yong Sheng",
-  "license": "MIT",
   "dependencies": {
     "@google-cloud/storage": "^7.17.1",
     "@google/genai": "^1.24.0",
@@ -42,9 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
-    "typescript": "^5.5.0",
-    "eslint": "^8.57.0",
-    "prettier": "^3.3.2"
+    "typescript": "^5.5.0"
   },
   "engines": {
     "node": ">=20.0.0"
